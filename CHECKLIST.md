@@ -3,11 +3,15 @@
 Bring a site into compliance with web-standards. Most of this is automated by
 `bin/onboard.sh`; the manual items are called out.
 
+> **New here?** Start with [docs/BUILDING-A-SITE.md](docs/BUILDING-A-SITE.md)
+> — it walks you through picking a profile and the full flow. This file is the
+> condensed checklist.
+
 ## Automated (run once)
 
 ```bash
 cd /path/to/your-site           # site repo root
-bash /path/to/web-standards/bin/onboard.sh
+bash /path/to/web-standards/bin/onboard.sh --profile <jekyll-public|node-private>
 ```
 
 This will:
@@ -30,7 +34,7 @@ This will:
       matching directive in web-standards if not.
 - [ ] **Site config:** fill Jekyll `_config.yml` `url`/`baseurl`
       (personal site: `baseurl` empty; project site: `baseurl: /repo/`).
-- [ ] **Deploy workflow:** web-standards does *not* ship a deploy workflow
+- [ ] **Deploy workflow:** web-standards does _not_ ship a deploy workflow
       (it's host-specific). Keep the site's own deploy workflow.
 - [ ] **CodeQL languages:** if the stack isn't JS + Ruby, override
       `languages` in the CodeQL caller stub.

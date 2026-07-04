@@ -7,20 +7,20 @@ loosen with wildcards.
 
 ## Current directives
 
-| Directive | Value | Why |
-| --------- | ----- | --- |
-| `default-src` | `'self'` | Deny-by-default; everything else narrows from here. |
-| `base-uri` | `'self'` | Block `<base>` hijacking. |
-| `object-src` | `'none'` | No Flash/plugins. |
-| `frame-ancestors` | `'self'` | Anti-clickjacking (pairs with X-Frame-Options). |
-| `img-src` | `'self' data: https:` | Site images, data URIs, any HTTPS image (badges, avatars). |
-| `media-src` | `'self' https:` | Audio/video from self or HTTPS. |
-| `font-src` | `'self' https://fonts.gstatic.com data:` | Google Fonts + inlined fonts. |
-| `style-src` | `'self' 'unsafe-inline' fonts.googleapis.com cdn.jsdelivr.net cdnjs.cloudflare.com` | Theme CSS, inline styles, font + CDN stylesheets. |
-| `script-src` | `'self' 'unsafe-inline' unpkg.com cdn.jsdelivr.net cdnjs.cloudflare.com giscus.app badge.dimensions.ai d1bxh8uas1mnw7.cloudfront.net` | Theme JS, model-viewer (unpkg), giscus, Dimensions/Altmetric badges. |
-| `frame-src` | `https://giscus.app` | giscus comments iframe. |
-| `connect-src` | `'self' giscus.app api.github.com badge.dimensions.ai d1bxh8uas1mnw7.cloudfront.net api.altmetric.com` | XHR/fetch allowlist (giscus, GitHub API for repo stats, Dimensions/Altmetric badges). |
-| `upgrade-insecure-requests` | — | Auto-upgrade any stray http URL to https. |
+| Directive                   | Value                                                                                                                                 | Why                                                                                   |
+| --------------------------- | ------------------------------------------------------------------------------------------------------------------------------------- | ------------------------------------------------------------------------------------- |
+| `default-src`               | `'self'`                                                                                                                              | Deny-by-default; everything else narrows from here.                                   |
+| `base-uri`                  | `'self'`                                                                                                                              | Block `<base>` hijacking.                                                             |
+| `object-src`                | `'none'`                                                                                                                              | No Flash/plugins.                                                                     |
+| `frame-ancestors`           | `'self'`                                                                                                                              | Anti-clickjacking (pairs with X-Frame-Options).                                       |
+| `img-src`                   | `'self' data: https:`                                                                                                                 | Site images, data URIs, any HTTPS image (badges, avatars).                            |
+| `media-src`                 | `'self' https:`                                                                                                                       | Audio/video from self or HTTPS.                                                       |
+| `font-src`                  | `'self' https://fonts.gstatic.com data:`                                                                                              | Google Fonts + inlined fonts.                                                         |
+| `style-src`                 | `'self' 'unsafe-inline' fonts.googleapis.com cdn.jsdelivr.net cdnjs.cloudflare.com`                                                   | Theme CSS, inline styles, font + CDN stylesheets.                                     |
+| `script-src`                | `'self' 'unsafe-inline' unpkg.com cdn.jsdelivr.net cdnjs.cloudflare.com giscus.app badge.dimensions.ai d1bxh8uas1mnw7.cloudfront.net` | Theme JS, model-viewer (unpkg), giscus, Dimensions/Altmetric badges.                  |
+| `frame-src`                 | `https://giscus.app`                                                                                                                  | giscus comments iframe.                                                               |
+| `connect-src`               | `'self' giscus.app api.github.com badge.dimensions.ai d1bxh8uas1mnw7.cloudfront.net api.altmetric.com`                                | XHR/fetch allowlist (giscus, GitHub API for repo stats, Dimensions/Altmetric badges). |
+| `upgrade-insecure-requests` | —                                                                                                                                     | Auto-upgrade any stray http URL to https.                                             |
 
 ## Documented risk acceptances
 
@@ -34,16 +34,16 @@ Both are conscious trade-offs, not oversights:
    that rewrites responses and injects a nonce + matching header. That is a
    higher-risk change (a misconfigured CSP white-screens the whole site), so
    it is deferred to its own focused round. When done, add `'strict-dynamic'`
-   + a nonce to `script-src`, drop `'unsafe-inline'` for scripts, and (if a
-   site diverges from the standard) list `_headers` in that site's
-   `.standards-allow`.
+   - a nonce to `script-src`, drop `'unsafe-inline'` for scripts, and (if a
+     site diverges from the standard) list `_headers` in that site's
+     `.standards-allow`.
 
 2. **`img-src` / `media-src` stay `https:` (any HTTPS origin).** These are
    academic content sites that embed images and media from many origins
    (paper figures, external hosts). Images and media cannot execute
    JavaScript, so they are not an XSS vector; an allowlist here would break
    future embedded content for negligible security gain. The channel that
-   *does* matter for exfiltration — `connect-src` — is an explicit allowlist.
+   _does_ matter for exfiltration — `connect-src` — is an explicit allowlist.
 
 ## Adding a third-party script/style/frame/connect host
 
