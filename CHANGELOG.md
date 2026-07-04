@@ -14,10 +14,44 @@ git tag -f v1 vX.Y.Z
 git push -f origin v1
 ```
 
-Non-breaking change → bump minor/patch, keep `v1` pointing at it. Breaking
-change (e.g. a renamed workflow input, a removed workflow) → cut `v2.0.0`,
-create a moving `v2` tag, and let consumers migrate `@v1` → `@v2`
-deliberately.
+Non-breaking change → bump minor/patch, keep the current major tag pointing
+at it. Breaking change (renamed workflow input, removed workflow, restructure)
+→ cut the next major (`vN.0.0`), create a moving `vN` tag, and let consumers
+migrate `@v(N-1)` → `@vN` deliberately. **Old major tags stay alive** as
+rollback paths.
+
+---
+
+## v2.0.0 — 2026-07-04
+
+Layered restructure so the standard supports **multiple site types**, not
+just public Jekyll. `@v1` remains valid as a fallback.
+
+### Changed (breaking)
+
+- **Layered layout.** Formatting configs moved to `core/formatting/`;
+  profile-specific root files (`_headers`, `robots.txt`) moved under
+  `profiles/<name>/root-files/`. `.pre-commit-config.yaml` stays universal
+  in `root-files/`.
+- **Parameterized reusable workflows.** accessibility / broken-links /
+  lighthouse now accept `runtime` (`jekyll`|`node`), `build-cmd`, `site-dir`
+  (defaults preserve v1 Jekyll behavior). New `build.yml` reusable workflow.
+- **Profile-aware tooling.** A site declares `.standards-profile`;
+  `sync-standards.sh` / `check-drift.sh` resolve that profile's root files;
+  `onboard.sh --profile <name>` installs the matching caller stubs.
+
+### Added
+
+- `profiles/jekyll-public/` — repackages v1 behavior (public robots+sitemap,
+  CDN CSP, JS+Ruby CodeQL, `bundle exec jekyll build` → `_site`).
+- `core/baseline-requirements.yml` — the CSP/robots/build floor every profile
+  must meet (enforcement lands with `headers-assert` in Phase 2).
+
+### Migration (`@v1` → `@v2`)
+
+Bump the submodule, add `.standards-profile` (e.g. `jekyll-public`), flip
+caller stubs `@v1` → `@v2`. `node-private` profile + generated-header
+assertion + the private site's onboarding land in Phase 2.
 
 ---
 

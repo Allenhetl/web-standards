@@ -1,0 +1,7 @@
+name: jekyll-public
+runtime: jekyll
+build-cmd: "bundle exec jekyll build"
+site-dir: "_site"
+codeql-languages: '[{"language":"javascript-typescript","build-mode":"none"},{"language":"ruby","build-mode":"none"}]'
+headers: static # _headers is a synced, drift-checked root file
+robots: static # robots.txt is a synced root file (Liquid sitemap)

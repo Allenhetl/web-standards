@@ -1,0 +1,23 @@
+# The security/robots/build FLOOR every profile must satisfy.
+# A profile's own requirements may be STRICTER, never looser.
+# Consumed by the headers-assert logic (Phase 2). Authored + validated here
+# in Phase 1.
+csp:
+  # Each entry must be present in the effective Content-Security-Policy.
+  require-directives:
+    - "object-src 'none'"
+    - "frame-ancestors" # must be present and restricted ('self' or 'none')
+    - "base-uri" # must be present and restricted ('self' or 'none')
+    - "default-src" # must be declared
+  forbid-substrings:
+    - "'unsafe-eval'"
+robots:
+  # A site must declare a coherent policy, never absent/contradictory:
+  #   public-with-sitemap  → search engines allowed + a Sitemap: line
+  #   noindex-disallow-all → Disallow: / + noindex (meta + X-Robots-Tag)
+  require-one-of:
+    - "public-with-sitemap"
+    - "noindex-disallow-all"
+build:
+  must-produce-site-dir: true
+  must-emit-security-headers: true

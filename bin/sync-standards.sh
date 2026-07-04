@@ -19,7 +19,27 @@ set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STD_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SITE_ROOT="$(cd "$STD_ROOT/.." && pwd)"
+
+# v2 layered sources:
+#   FMT       formatting configs, universal (core/formatting/)
+#   SRC       other universal root files (root-files/) — e.g. pre-commit
+#   PROF_ROOT profile-specific static root files (profiles/<name>/root-files/)
+# The active profile is declared in the site's .standards-profile
+# (default jekyll-public for backward compatibility).
+FMT="$STD_ROOT/core/formatting"
 SRC="$STD_ROOT/root-files"
+PROFILE="jekyll-public"
+[ -f "$SITE_ROOT/.standards-profile" ] && PROFILE="$(tr -d '[:space:]' < "$SITE_ROOT/.standards-profile")"
+PROF_ROOT="$STD_ROOT/profiles/$PROFILE/root-files"
+
+# Where each managed file's authoritative copy lives.
+src_of() {
+  case "$1" in
+    .editorconfig | .prettierrc | .prettierignore) echo "$FMT/$1" ;;
+    _headers | robots.txt) echo "$PROF_ROOT/$1" ;;
+    *) echo "$SRC/$1" ;;
+  esac
+}
 
 ALLOW_FILE="$SITE_ROOT/.standards-allow"
 PRETTIER_MARKER="# --- site-specific ---"
@@ -32,9 +52,16 @@ is_exempt() {
 changed=()
 
 sync_file() {
-  local name="$1" src="$SRC/$1" dst="$SITE_ROOT/$1"
+  local name="$1" src dst="$SITE_ROOT/$1"
+  src="$(src_of "$name")"
   if is_exempt "$name"; then
     echo "  skip (exempt): $name"
+    return
+  fi
+  # A profile may not ship this file (e.g. headers/robots are generated) —
+  # then there's nothing to sync; the profile asserts instead.
+  if [ ! -f "$src" ]; then
+    echo "  skip (not in profile '$PROFILE'): $name"
     return
   fi
   if [ ! -f "$dst" ] || ! cmp -s "$src" "$dst"; then
@@ -47,7 +74,8 @@ sync_file() {
 # .prettierignore: replace only the managed (pre-marker) section.
 sync_prettierignore() {
   local name=".prettierignore"
-  local src="$SRC/$name" dst="$SITE_ROOT/$name"
+  local src dst="$SITE_ROOT/$name"
+  src="$(src_of "$name")"
   if is_exempt "$name"; then
     echo "  skip (exempt): $name"
     return
@@ -69,7 +97,7 @@ sync_prettierignore() {
   fi
 }
 
-echo "Syncing web-standards root files into: $SITE_ROOT"
+echo "Syncing web-standards root files into: $SITE_ROOT (profile: $PROFILE)"
 
 for f in _headers robots.txt .editorconfig .prettierrc .pre-commit-config.yaml; do
   sync_file "$f"

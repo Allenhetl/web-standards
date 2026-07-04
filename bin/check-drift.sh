@@ -11,7 +11,21 @@ set -uo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
 STD_ROOT="$(cd "$SCRIPT_DIR/.." && pwd)"
 SITE_ROOT="$(cd "$STD_ROOT/.." && pwd)"
+
+# v2 layered sources (mirrors sync-standards.sh).
+FMT="$STD_ROOT/core/formatting"
 SRC="$STD_ROOT/root-files"
+PROFILE="jekyll-public"
+[ -f "$SITE_ROOT/.standards-profile" ] && PROFILE="$(tr -d '[:space:]' < "$SITE_ROOT/.standards-profile")"
+PROF_ROOT="$STD_ROOT/profiles/$PROFILE/root-files"
+
+src_of() {
+  case "$1" in
+    .editorconfig | .prettierrc | .prettierignore) echo "$FMT/$1" ;;
+    _headers | robots.txt) echo "$PROF_ROOT/$1" ;;
+    *) echo "$SRC/$1" ;;
+  esac
+}
 
 ALLOW_FILE="$SITE_ROOT/.standards-allow"
 PRETTIER_MARKER="# --- site-specific ---"
@@ -25,15 +39,21 @@ drift=0
 
 report() {
   echo "::error::web-standards drift in '$1' — run standards/bin/sync-standards.sh"
-  echo "--- expected (standards/root-files/$1)"
+  echo "--- expected ($2)"
   echo "+++ actual   ($1)"
   diff -u "$2" "$3" || true
   drift=1
 }
 
 check_file() {
-  local name="$1" src="$SRC/$1" dst="$SITE_ROOT/$1"
+  local name="$1" src dst="$SITE_ROOT/$1"
+  src="$(src_of "$name")"
   is_exempt "$name" && { echo "skip (exempt): $name"; return; }
+  # A profile that doesn't ship this file (generated headers/robots) has
+  # nothing to drift-check here; the profile asserts instead (Phase 2).
+  if [ ! -f "$src" ]; then
+    echo "skip (not in profile '$PROFILE'): $name"; return
+  fi
   if [ ! -f "$dst" ]; then
     echo "::error::missing root file '$name' — run sync-standards.sh"; drift=1; return
   fi
@@ -43,7 +63,8 @@ check_file() {
 # .prettierignore: compare only the managed (pre-marker) section.
 check_prettierignore() {
   local name=".prettierignore"
-  local src="$SRC/$name" dst="$SITE_ROOT/$name"
+  local src dst="$SITE_ROOT/$name"
+  src="$(src_of "$name")"
   is_exempt "$name" && { echo "skip (exempt): $name"; return; }
   if [ ! -f "$dst" ]; then
     echo "::error::missing root file '$name' — run sync-standards.sh"; drift=1; return

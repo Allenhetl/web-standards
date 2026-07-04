@@ -1,34 +1,22 @@
-# Reusable accessibility workflow (axe-core) for al-folio / Jekyll sites.
-# Call from a site with:
-#
-#   jobs:
-#     axe:
-#       uses: Allenhetl/web-standards/.github/workflows/accessibility.yml@main
-#       with:
-#         url: "blog/"        # optional path to check
-name: Accessibility (reusable)
+# Reusable, parameterized build. Supports Jekyll (Ruby) and Node runtimes.
+# Verifies the site builds and produces its output directory.
+name: Build (reusable)
 
 on:
   workflow_call:
     inputs:
-      url:
-        description: "Path to check, relative to site root (e.g. 'blog/')"
-        type: string
-        required: false
-        default: ""
       runtime:
         description: "jekyll | node"
         type: string
-        required: false
-        default: "jekyll"
+        required: true
       build-cmd:
+        description: "Build command (e.g. 'bundle exec jekyll build' or 'npm run build')"
         type: string
-        required: false
-        default: "bundle exec jekyll build"
+        required: true
       site-dir:
+        description: "Output directory the build produces (e.g. _site or site)"
         type: string
-        required: false
-        default: "_site"
+        required: true
       ruby-version:
         type: string
         required: false
@@ -42,7 +30,7 @@ permissions:
   contents: read
 
 jobs:
-  check:
+  build:
     runs-on: ubuntu-latest
     steps:
       - name: Harden runner 🛡️
@@ -53,7 +41,7 @@ jobs:
         uses: actions/checkout@v4
         with:
           persist-credentials: false
-      - name: Setup Ruby
+      - name: Setup Ruby 💎
         if: inputs.runtime == 'jekyll'
         uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9 # v1.316.0
         with:
@@ -64,7 +52,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: ${{ inputs.node-version }}
-      - name: Update _config.yml ⚙️
+      - name: Jekyll config prep ⚙️
         if: inputs.runtime == 'jekyll'
         uses: fjogeleit/yaml-update-action@dffe9a5223d84653c13374032382f6bb5de8e5ef # v0.17.0
         with:
@@ -87,26 +75,12 @@ jobs:
         run: |
           export JEKYLL_ENV=production
           ${{ inputs.build-cmd }}
-      - name: Purge unused CSS 🧹
+      - name: Jekyll PurgeCSS 🧹
         if: inputs.runtime == 'jekyll'
         run: |
           npm install -g purgecss
           purgecss -c purgecss.config.js
-      - name: Get Chromium version 🌐
+      - name: Verify output dir ✅
         run: |
-          CHROMIUM_VERSION=$(wget -qO- https://googlechromelabs.github.io/chrome-for-testing/LATEST_RELEASE_STABLE | cut -d. -f1)
-          echo "Chromium version: $CHROMIUM_VERSION"
-          echo "CHROMIUM_VERSION=$CHROMIUM_VERSION" >> $GITHUB_ENV
-      - name: Setup Chrome 🌐
-        id: setup-chrome
-        uses: browser-actions/setup-chrome@c785b87e244131f27c9f19c1a33e2ead956ab7ce # v1
-        with:
-          chrome-version: ${{ env.CHROMIUM_VERSION }}
-      - name: Install chromedriver 🚗
-        run: npm install -g chromedriver@$CHROMIUM_VERSION
-      - name: Run axe 🪓
-        run: |
-          npm install -g @axe-core/cli
-          npm install -g http-server
-          http-server ${{ inputs.site-dir }}/ &
-          axe --chromedriver-path $(npm root -g)/chromedriver/bin/chromedriver http://localhost:8080/${{ inputs.url }} --load-delay=1500 --exit
+          test -d "${{ inputs.site-dir }}" || { echo "::error::site-dir '${{ inputs.site-dir }}' not produced"; exit 1; }
+          echo "Built ${{ inputs.site-dir }} ($(find "${{ inputs.site-dir }}" -type f | wc -l) files)"

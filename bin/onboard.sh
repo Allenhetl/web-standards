@@ -16,6 +16,17 @@ set -euo pipefail
 STANDARDS_URL="https://github.com/Allenhetl/web-standards"
 SUBMODULE_PATH="standards"
 
+# Which site-type profile to adopt (see profiles/). Default keeps the v1
+# behavior for existing public Jekyll sites.
+PROFILE="jekyll-public"
+while [ $# -gt 0 ]; do
+  case "$1" in
+    --profile) PROFILE="$2"; shift 2 ;;
+    --profile=*) PROFILE="${1#*=}"; shift ;;
+    *) shift ;;
+  esac
+done
+
 SITE_ROOT="$(git rev-parse --show-toplevel 2>/dev/null || true)"
 if [ -z "$SITE_ROOT" ]; then
   echo "error: run this from inside the site's git repository." >&2
@@ -23,7 +34,7 @@ if [ -z "$SITE_ROOT" ]; then
 fi
 cd "$SITE_ROOT"
 
-echo "==> Onboarding site: $SITE_ROOT"
+echo "==> Onboarding site: $SITE_ROOT (profile: $PROFILE)"
 
 # 1. Add the standards submodule (skip if already present).
 if [ -d "$SUBMODULE_PATH" ] && git submodule status "$SUBMODULE_PATH" >/dev/null 2>&1; then
@@ -36,10 +47,19 @@ fi
 
 STD="$SITE_ROOT/$SUBMODULE_PATH"
 
-# 2. Copy caller workflow stubs into the site.
-echo "[2/5] installing reusable-workflow caller stubs"
+# Validate the profile exists, then record it so sync/check-drift resolve it.
+STUB_DIR="$STD/profiles/$PROFILE/caller-workflows"
+if [ ! -d "$STUB_DIR" ]; then
+  echo "error: unknown profile '$PROFILE' (no $STUB_DIR). Available:" >&2
+  ls "$STD/profiles" 2>/dev/null | sed 's/^/  - /' >&2
+  exit 1
+fi
+echo "$PROFILE" > "$SITE_ROOT/.standards-profile"
+
+# 2. Copy this profile's caller workflow stubs into the site.
+echo "[2/5] installing reusable-workflow caller stubs (profile: $PROFILE)"
 mkdir -p "$SITE_ROOT/.github/workflows"
-for stub in "$STD/templates/workflows/"*.yml; do
+for stub in "$STUB_DIR/"*.yml; do
   base="$(basename "$stub")"
   cp "$stub" "$SITE_ROOT/.github/workflows/$base"
   echo "      + .github/workflows/$base"
@@ -69,7 +89,7 @@ else
   echo "      pre-commit not found — install it, then run: pre-commit install"
 fi
 
-git add -A .github/workflows .github/dependabot.yml .gitmodules "$SUBMODULE_PATH" 2>/dev/null || true
+git add -A .github/workflows .github/dependabot.yml .gitmodules .standards-profile "$SUBMODULE_PATH" 2>/dev/null || true
 
 cat <<'EOF'
 
