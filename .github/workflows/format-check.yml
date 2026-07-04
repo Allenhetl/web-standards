@@ -1,0 +1,39 @@
+# Reusable Prettier format check. Fails if any file is not formatted.
+name: Format check (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      prettier-plugins:
+        description: "Extra npm packages to install for Prettier"
+        type: string
+        required: false
+        default: "@shopify/prettier-plugin-liquid"
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+      - name: Setup Node.js ⚙️
+        uses: actions/setup-node@v4
+      - name: Install Prettier 💾
+        run: npm install --save-dev --save-exact prettier ${{ inputs.prettier-plugins }}
+      - name: Prettier Check 🔎
+        id: prettier
+        run: npx prettier . --check
+      - name: Create diff 📝
+        if: ${{ failure() }}
+        run: |
+          npx prettier . --write
+          git diff -- . ':(exclude)package-lock.json' ':(exclude)package.json' > diff.txt
+          npm install -g diff2html-cli
+          diff2html -i file -s side -F diff.html -- diff.txt
+      - name: Upload html diff ⬆️
+        if: ${{ failure() && steps.prettier.conclusion == 'failure' }}
+        uses: actions/upload-artifact@v4
+        with:
+          name: HTML Diff
+          path: diff.html
+          retention-days: 7

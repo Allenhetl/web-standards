@@ -1,0 +1,27 @@
+# Reusable drift check. Fails the build if a site's root files have drifted
+# from the authoritative copies in the web-standards submodule. This is the
+# contract behind the pre-commit auto-sync — it catches --no-verify commits
+# and machines that never installed the hook.
+name: Standards drift (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      submodule-path:
+        description: "Path to the web-standards submodule in the site repo"
+        type: string
+        required: false
+        default: "standards"
+
+jobs:
+  drift:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout (with submodules) 🛎️
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive
+      - name: Update submodule to latest standard 🔄
+        run: git submodule update --remote "${{ inputs.submodule-path }}"
+      - name: Check for drift 🔍
+        run: bash "${{ inputs.submodule-path }}/bin/check-drift.sh"

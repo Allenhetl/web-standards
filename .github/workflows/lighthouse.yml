@@ -1,0 +1,103 @@
+# Reusable Lighthouse CI. Builds the Jekyll site, serves it, and audits
+# performance / accessibility / best-practices / SEO against thresholds.
+name: Lighthouse (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      ruby-version:
+        type: string
+        required: false
+        default: "3.3.5"
+      paths:
+        description: "Newline- or space-separated site paths to audit"
+        type: string
+        required: false
+        default: "/"
+      min-performance:
+        type: number
+        required: false
+        default: 0.9
+      min-accessibility:
+        type: number
+        required: false
+        default: 0.9
+      min-best-practices:
+        type: number
+        required: false
+        default: 0.9
+      min-seo:
+        type: number
+        required: false
+        default: 0.9
+
+jobs:
+  lighthouse:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+      - name: Setup Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: ${{ inputs.ruby-version }}
+          bundler-cache: true
+      - name: Update _config.yml ⚙️
+        uses: fjogeleit/yaml-update-action@main
+        with:
+          commitChange: false
+          valueFile: "_config.yml"
+          changes: |
+            {
+              "giscus.repo": "${{ github.repository }}",
+              "baseurl": ""
+            }
+      - name: Install and Build 🔧
+        run: |
+          sudo apt-get update && sudo apt-get install -y imagemagick
+          pip3 install --upgrade jupyter
+          export JEKYLL_ENV=production
+          bundle exec jekyll build
+      - name: Purge unused CSS 🧹
+        run: |
+          npm install -g purgecss
+          purgecss -c purgecss.config.js
+      - name: Serve site 🌐
+        run: |
+          npm install -g http-server
+          http-server _site/ -p 8080 &
+          sleep 3
+      - name: Build LHCI URL list 🔧
+        id: urls
+        run: |
+          urls=""
+          for p in ${{ inputs.paths }}; do
+            urls="$urls http://localhost:8080${p}"
+          done
+          echo "list=$urls" >> "$GITHUB_OUTPUT"
+      - name: Run Lighthouse 🔦
+        uses: treosh/lighthouse-ci-action@v12
+        with:
+          urls: ${{ steps.urls.outputs.list }}
+          uploadArtifacts: true
+          temporaryPublicStorage: true
+          runs: 1
+          # Assertions enforced below via a generated config.
+      - name: Enforce thresholds ✅
+        run: |
+          node -e '
+            const fs=require("fs");
+            const dir=".lighthouseci";
+            if(!fs.existsSync(dir)){console.log("no LHCI output; skipping");process.exit(0)}
+            const files=fs.readdirSync(dir).filter(f=>f.startsWith("lhr-")&&f.endsWith(".json"));
+            const min={performance:${{ inputs.min-performance }},accessibility:${{ inputs.min-accessibility }},"best-practices":${{ inputs.min-best-practices }},seo:${{ inputs.min-seo }}};
+            let bad=false;
+            for(const f of files){
+              const r=JSON.parse(fs.readFileSync(dir+"/"+f));
+              for(const k of Object.keys(min)){
+                const s=r.categories[k]?.score;
+                if(s!=null&&s<min[k]){console.log(`FAIL ${r.finalUrl} ${k}=${s} < ${min[k]}`);bad=true}
+              }
+            }
+            process.exit(bad?1:0);
+          '

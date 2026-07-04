@@ -1,0 +1,28 @@
+# GENERATED FROM standards/root-files/.editorconfig — DO NOT EDIT.
+# Run standards/bin/sync-standards.sh (the pre-commit hook does it for you).
+#
+# EditorConfig — consistent whitespace across editors and OSes.
+# https://editorconfig.org  (kills the recurring "LF will be replaced by
+# CRLF" warnings by pinning line endings to LF for all text files.)
+root = true
+
+[*]
+charset = utf-8
+end_of_line = lf
+insert_final_newline = true
+trim_trailing_whitespace = true
+indent_style = space
+indent_size = 2
+
+# Markdown: trailing spaces can be meaningful (hard line breaks).
+[*.md]
+trim_trailing_whitespace = false
+
+# Makefiles require real tabs.
+[Makefile]
+indent_style = tab
+
+# Leave binary-ish and vendored formats alone.
+[*.{ico,png,jpg,jpeg,gif,webp,svg,mp4,woff,woff2,ttf,eot}]
+insert_final_newline = false
+trim_trailing_whitespace = false

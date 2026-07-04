@@ -1,0 +1,23 @@
+# GENERATED FROM standards/root-files/.pre-commit-config.yaml — DO NOT EDIT.
+# Run standards/bin/sync-standards.sh (this hook does it for you).
+# See https://pre-commit.com for more information.
+repos:
+  - repo: https://github.com/pre-commit/pre-commit-hooks
+    rev: v4.3.0
+    hooks:
+      - id: trailing-whitespace
+      - id: end-of-file-fixer
+      - id: check-yaml
+      - id: check-added-large-files
+
+  # web-standards: keep root files in sync with the standards submodule.
+  # Regenerates _headers, robots.txt, .editorconfig, etc. from
+  # standards/root-files/ before each commit and stages any changes.
+  - repo: local
+    hooks:
+      - id: sync-standards
+        name: sync web-standards root files
+        entry: standards/bin/sync-standards.sh
+        language: script
+        pass_filenames: false
+        always_run: true

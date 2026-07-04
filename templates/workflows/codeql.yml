@@ -1,0 +1,13 @@
+# Caller stub — real logic lives in Allenhetl/web-standards.
+# Override `languages` if this site's stack differs from JS+Ruby.
+name: CodeQL
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+  schedule:
+    - cron: "45 4 * * 3"
+jobs:
+  analyze:
+    uses: Allenhetl/web-standards/.github/workflows/codeql.yml@main

@@ -1,0 +1,11 @@
+# Caller stub — real logic lives in Allenhetl/web-standards.
+# Fails CI if this site's root files drift from the standard.
+name: Standards drift
+on:
+  push:
+    branches: [main, master]
+  pull_request:
+    branches: [main, master]
+jobs:
+  drift:
+    uses: Allenhetl/web-standards/.github/workflows/standards-drift.yml@main

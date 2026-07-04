@@ -1,0 +1,15 @@
+# GENERATED (base) FROM standards/root-files/.prettierignore.
+# This is the GENERIC baseline shared by every site. Site-specific ignores
+# go BELOW the "# --- site-specific ---" marker, which sync-standards.sh
+# preserves. Do not edit the section above the marker by hand.
+
+# Minified & source-map artifacts.
+**/*.map
+**/*.min.css
+**/*.min.js
+
+# Vendored / generated output.
+node_modules/**
+lighthouse_results/**
+
+# --- site-specific --- (edit freely below this line; kept across syncs)

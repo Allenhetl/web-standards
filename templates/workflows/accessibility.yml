@@ -1,0 +1,14 @@
+# Caller stub — real logic lives in Allenhetl/web-standards.
+# Edit the standard there; this file rarely changes.
+name: Accessibility
+on:
+  workflow_dispatch:
+    inputs:
+      url:
+        description: "Path to check (e.g. blog/)"
+        required: false
+jobs:
+  axe:
+    uses: Allenhetl/web-standards/.github/workflows/accessibility.yml@main
+    with:
+      url: ${{ github.event.inputs.url || '' }}

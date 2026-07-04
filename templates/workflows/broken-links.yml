@@ -1,0 +1,11 @@
+# Caller stub — real logic lives in Allenhetl/web-standards.
+name: Broken links
+on:
+  workflow_run:
+    workflows: [Deploy site]
+    types: [completed]
+  workflow_dispatch:
+jobs:
+  check-links:
+    if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
+    uses: Allenhetl/web-standards/.github/workflows/broken-links.yml@main
