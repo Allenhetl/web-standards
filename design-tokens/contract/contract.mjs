@@ -3,16 +3,15 @@
 // own raw palette. See docs/DESIGN-TOKENS.md.
 //
 //   token     the CSS custom property name (without the leading --)
-//   category  color | type | motion | shape | space | shadow  (emission order)
+//   category  color | type | motion | shape | space | focus | shadow  (order)
 //   dark      "required"  → a conformant theme MUST supply a dark value
 //             "invariant" → identical in light and dark (fonts, motion, shape,
 //                           space)
 //   purpose   one-line meaning (documentation + generated comments)
 //
-// v1.1 — 36 tokens. Adds a --space-* scale (6 rungs). This is ADDITIVE: a
-// minor contract bump, but themes must now implement the new tokens or fail
-// --check (the scale ships default rem values via a shared base, below).
-// Still deferred: --bp-grid-color (site-local), a --focus-ring composite.
+// v1.2 — 40 tokens. Adds a --space-* scale (6 rungs, v1.1) and a --focus-ring
+// set (4 tokens, v1.2). Additive minor bumps; themes must implement the new
+// tokens or fail --check. Still deferred: --bp-grid-color (site-local).
 
 export const CONTRACT = [
   // --- color ---------------------------------------------------------
@@ -225,6 +224,36 @@ export const CONTRACT = [
     purpose: "Spacing scale: 48px — major section spacing.",
   },
 
+  // --- focus (invariant) — shared keyboard-focus interface. Ingredients
+  //     (width/offset/color) let each site compose its own ring; --focus-ring
+  //     is a ready-made composite for the common halo style. Both sites use a
+  //     2px accent ring + 2px offset today. -----------------------------
+  {
+    token: "focus-ring-width",
+    category: "focus",
+    dark: "invariant",
+    purpose: "Focus ring thickness (e.g. 2px).",
+  },
+  {
+    token: "focus-ring-offset",
+    category: "focus",
+    dark: "invariant",
+    purpose: "Focus outline offset (e.g. 2px).",
+  },
+  {
+    token: "focus-ring-color",
+    category: "focus",
+    dark: "invariant",
+    purpose: "Focus ring color (typically → accent).",
+  },
+  {
+    token: "focus-ring",
+    category: "focus",
+    dark: "invariant",
+    purpose:
+      "Ready-made box-shadow focus halo (bg gap + accent ring); hugs border-radius.",
+  },
+
   // --- shadow (dark variants differ) ---------------------------------
   {
     token: "shadow-1",
@@ -257,5 +286,6 @@ export const CATEGORY_ORDER = [
   "motion",
   "shape",
   "space",
+  "focus",
   "shadow",
 ];

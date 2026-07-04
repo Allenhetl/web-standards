@@ -41,6 +41,11 @@
   --space-4: 1rem;
   --space-5: 1.5rem;
   --space-6: 3rem;
+  /* Focus */
+  --focus-ring-width: 2px;
+  --focus-ring-offset: 2px;
+  --focus-ring-color: var(--accent);
+  --focus-ring: 0 0 0 2px var(--bg), 0 0 0 4px var(--accent);
   /* Elevation */
   --shadow-1: 0 1px 2px rgba(20, 22, 45, 0.06), 0 10px 24px -16px rgba(20, 22, 45, 0.3);
   --shadow-2: 0 2px 4px rgba(20, 22, 45, 0.07), 0 22px 40px -20px rgba(20, 22, 45, 0.42);
