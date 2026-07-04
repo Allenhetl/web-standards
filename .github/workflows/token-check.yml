@@ -1,0 +1,51 @@
+# Reusable: verify design-token themes conform to the contract AND that the
+# committed dist/ artifacts are up to date (regenerating produces no diff).
+# Runs inside web-standards' own CI; also callable by a consuming site that
+# vendors the tokens.
+name: Token check (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      node-version:
+        type: string
+        required: false
+        default: "20"
+      tokens-dir:
+        description: "Path to the design-tokens dir (default for web-standards itself)"
+        type: string
+        required: false
+        default: "design-tokens"
+
+permissions:
+  contents: read
+
+jobs:
+  tokens:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden runner 🛡️
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+      - name: Setup Node ⚙️
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: Conformance check ✅
+        working-directory: ${{ inputs.tokens-dir }}
+        run: node build/generate.mjs --all --check
+      - name: Regenerate + assert no drift 🔁
+        working-directory: ${{ inputs.tokens-dir }}
+        run: |
+          node build/generate.mjs --all
+          if ! git diff --quiet -- dist/; then
+            echo "::error::dist/ is stale — run 'node build/generate.mjs --all' and commit"
+            git --no-pager diff -- dist/
+            exit 1
+          fi
+          echo "dist/ artifacts are up to date."
