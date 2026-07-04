@@ -1,0 +1,7 @@
+# Pin LF on everything text so files copied into a site (workflow stubs,
+# root files) stay byte-identical across OSes and pass Prettier's check.
+* text=auto eol=lf
+*.png binary
+*.jpg binary
+*.webp binary
+*.ico binary

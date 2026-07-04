@@ -12,4 +12,7 @@
 node_modules/**
 lighthouse_results/**
 
+# The web-standards submodule is vendored content — never lint it here.
+standards/**
+
 # --- site-specific --- (edit freely below this line; kept across syncs)
