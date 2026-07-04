@@ -10,4 +10,9 @@ jobs:
     uses: Allenhetl/web-standards/.github/workflows/build-validate.yml@v2
     with:
       build-cmd: "npm run build"
-      validate-cmd: "npm run validate"
+      # validate is OFF by default: a headless-browser render gate typically
+      # needs puppeteer-core/Chrome that isn't a CI-available dependency for
+      # zero-dep sites. Keep it as a LOCAL pre-commit gate. To run it in CI,
+      # set validate-cmd (e.g. "npm run validate") AND ensure the browser +
+      # puppeteer-core are installed in the workflow.
+      validate-cmd: ""

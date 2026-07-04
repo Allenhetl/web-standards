@@ -96,14 +96,13 @@ cat <<'EOF'
 ==> Onboarding complete (nothing committed yet). Remaining human steps:
 
   1. Review staged changes:            git status && git diff --staged
-  2. Reusable workflows reference @v1 of Allenhetl/web-standards (the
-     moving major tag). Pin to an exact @v1.2.3 if you want no auto-updates.
-  3. If this is NOT a Jekyll site, add site-specific exemptions to
-     .standards-allow (e.g. robots.txt if it can't use Liquid).
-  4. Confirm the CSP in _headers covers this site's embeds; extend the
-     matching directive if you add third-party scripts/frames.
-  5. Fill site config (e.g. _config.yml url/baseurl for Jekyll).
-  6. Commit:   git commit -m "Adopt web-standards"
+  2. Reusable workflows reference @v2 of Allenhetl/web-standards (the
+     moving major tag). Pin to an exact @v2.1.0 if you want no auto-updates.
+  3. Profile-specific: jekyll-public syncs a static _headers/robots (confirm
+     the CSP covers your embeds); node-private GENERATES them and CI asserts
+     the posture — no action unless you add new external resources.
+  4. Fill site config (e.g. _config.yml url/baseurl for a Jekyll site).
+  5. Commit:   git commit -m "Adopt web-standards"
 
 See standards/CHECKLIST.md for the full list.
 EOF
