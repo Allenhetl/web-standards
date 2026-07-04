@@ -10,4 +10,9 @@ on:
     - cron: "45 4 * * 3"
 jobs:
   analyze:
+    permissions:
+      security-events: write # CodeQL uploads results; caller must grant this
+      packages: read
+      actions: read
+      contents: read
     uses: Allenhetl/web-standards/.github/workflows/codeql.yml@main
