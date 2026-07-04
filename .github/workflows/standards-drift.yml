@@ -2,6 +2,12 @@
 # from the authoritative copies in the web-standards submodule. This is the
 # contract behind the pre-commit auto-sync — it catches --no-verify commits
 # and machines that never installed the hook.
+#
+# It compares against the submodule version the site has PINNED (no
+# --remote update), so a red build always means "you tampered with a root
+# file", never merely "a newer standard exists". Upgrading to a newer
+# standard is a deliberate `git submodule update --remote` the site owner
+# runs; being behind never fails CI on its own.
 name: Standards drift (reusable)
 
 on:
@@ -17,11 +23,9 @@ jobs:
   drift:
     runs-on: ubuntu-latest
     steps:
-      - name: Checkout (with submodules) 🛎️
+      - name: Checkout (with pinned submodule) 🛎️
         uses: actions/checkout@v4
         with:
           submodules: recursive
-      - name: Update submodule to latest standard 🔄
-        run: git submodule update --remote "${{ inputs.submodule-path }}"
       - name: Check for drift 🔍
         run: bash "${{ inputs.submodule-path }}/bin/check-drift.sh"
