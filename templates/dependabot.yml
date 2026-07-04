@@ -1,0 +1,19 @@
+# Site dependabot config — onboard.sh copies this to .github/dependabot.yml.
+# Covers GitHub Actions (caller stubs + any site-specific workflows) and the
+# web-standards submodule pointer.
+version: 2
+updates:
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns: ["*"]
+  # Bump the `standards` submodule pointer to the latest commit on its
+  # tracked ref. (If you pin the submodule to a tag like v1 in .gitmodules,
+  # this tracks that.)
+  - package-ecosystem: "gitsubmodule"
+    directory: "/"
+    schedule:
+      interval: "weekly"

@@ -8,4 +8,4 @@ on:
 jobs:
   check-links:
     if: ${{ github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success' }}
-    uses: Allenhetl/web-standards/.github/workflows/broken-links.yml@main
+    uses: Allenhetl/web-standards/.github/workflows/broken-links.yml@v1

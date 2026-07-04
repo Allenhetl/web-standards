@@ -1,0 +1,11 @@
+version: 2
+updates:
+  # Keep the SHA-pinned actions inside the reusable workflows current.
+  # Dependabot preserves the "# vX.Y.Z" comment and bumps the SHA.
+  - package-ecosystem: "github-actions"
+    directory: "/"
+    schedule:
+      interval: "weekly"
+    groups:
+      actions:
+        patterns: ["*"]

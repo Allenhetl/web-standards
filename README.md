@@ -29,6 +29,16 @@ per site; upgrade in one place; drift is caught automatically.
    files no longer match the authoritative copies. A per-site
    `.standards-allow` declares deliberate exemptions.
 
+## Versioning
+
+Consumers reference reusable workflows at the moving **`v1`** major tag
+(e.g. `uses: Allenhetl/web-standards/.github/workflows/format-check.yml@v1`),
+never `@main`. Non-breaking fixes ship under `v1`; breaking changes start
+`v2` and sites migrate deliberately. Pin to an exact `@v1.2.3` if you want no
+auto-updates. See [CHANGELOG.md](CHANGELOG.md) for the release procedure and
+[SECURITY.md](SECURITY.md) for the supply-chain policy (SHA-pinned actions,
+least-privilege tokens, harden-runner).
+
 ## Adopt it in a site
 
 ```bash

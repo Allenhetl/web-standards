@@ -45,30 +45,39 @@ for stub in "$STD/templates/workflows/"*.yml; do
   echo "      + .github/workflows/$base"
 done
 
-# 3. Sync root files.
-echo "[3/5] syncing root files"
+# 3. Install the Dependabot config (github-actions + submodule) if absent.
+echo "[3/6] installing dependabot config"
+if [ -f "$SITE_ROOT/.github/dependabot.yml" ]; then
+  echo "      .github/dependabot.yml exists — left untouched"
+else
+  cp "$STD/templates/dependabot.yml" "$SITE_ROOT/.github/dependabot.yml"
+  echo "      + .github/dependabot.yml"
+fi
+
+# 4. Sync root files.
+echo "[4/6] syncing root files"
 bash "$STD/bin/sync-standards.sh"
 
-# 4. Ensure the auto-sync pre-commit hook is present.
-echo "[4/5] pre-commit config synced (auto-sync hook included)"
+# 5. Ensure the auto-sync pre-commit hook is present.
+echo "[5/6] pre-commit config synced (auto-sync hook included)"
 
-# 5. Install the pre-commit hook if pre-commit is available.
-echo "[5/5] installing pre-commit hook"
+# 6. Install the pre-commit hook if pre-commit is available.
+echo "[6/6] installing pre-commit hook"
 if command -v pre-commit >/dev/null 2>&1; then
   pre-commit install
 else
   echo "      pre-commit not found — install it, then run: pre-commit install"
 fi
 
-git add -A .github/workflows .gitmodules "$SUBMODULE_PATH" 2>/dev/null || true
+git add -A .github/workflows .github/dependabot.yml .gitmodules "$SUBMODULE_PATH" 2>/dev/null || true
 
 cat <<'EOF'
 
 ==> Onboarding complete (nothing committed yet). Remaining human steps:
 
   1. Review staged changes:            git status && git diff --staged
-  2. Reusable workflows reference @main of Allenhetl/web-standards.
-     If your default branch differs, adjust the caller stubs.
+  2. Reusable workflows reference @v1 of Allenhetl/web-standards (the
+     moving major tag). Pin to an exact @v1.2.3 if you want no auto-updates.
   3. If this is NOT a Jekyll site, add site-specific exemptions to
      .standards-allow (e.g. robots.txt if it can't use Liquid).
   4. Confirm the CSP in _headers covers this site's embeds; extend the
