@@ -33,11 +33,11 @@ jobs:
         with:
           egress-policy: audit
       - name: Checkout 🛎️
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Setup Node.js ⚙️
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
       - name: Install Prettier 💾
         run: npm install --save-dev --save-exact ${{ inputs.prettier-packages }}
       - name: Prettier Check 🔎
@@ -53,7 +53,7 @@ jobs:
       - name: Upload html diff ⬆️
         id: artifact-upload
         if: ${{ failure() && steps.prettier.conclusion == 'failure' }}
-        uses: actions/upload-artifact@v4
+        uses: actions/upload-artifact@v7
         with:
           name: HTML Diff
           path: diff.html
@@ -63,7 +63,7 @@ jobs:
         # grant pull-requests: write; silently no-ops otherwise.
         if: ${{ failure() && steps.prettier.conclusion == 'failure' && github.event_name == 'pull_request' }}
         continue-on-error: true
-        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
+        uses: thollander/actions-comment-pull-request@24bffb9b452ba05a4f3f77933840a6a841d1b32b # v3.0.1
         with:
           comment_tag: prettier-failed
           message: |

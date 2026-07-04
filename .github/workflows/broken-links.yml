@@ -39,7 +39,7 @@ jobs:
         with:
           egress-policy: audit
       - name: Checkout 🛎️
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           persist-credentials: false
       - name: Setup Ruby
@@ -50,7 +50,7 @@ jobs:
           bundler-cache: true
       - name: Setup Node ⚙️
         if: inputs.runtime == 'node'
-        uses: actions/setup-node@v4
+        uses: actions/setup-node@v6
         with:
           node-version: ${{ inputs.node-version }}
       - name: Update _config.yml ⚙️
@@ -82,7 +82,7 @@ jobs:
           npm install -g purgecss
           purgecss -c purgecss.config.js
       - name: Link Checker 🔗
-        uses: lycheeverse/lychee-action@7cd0af4c74a61395d455af97419279d86aafaede # v2.0.2
+        uses: lycheeverse/lychee-action@8646ba30535128ac92d33dfc9133794bfdd9b411 # v2.8.0
         with:
           fail: true
           args: --offline --remap '${{ inputs.site-dir }}(/?.*)/assets/(.*) ${{ inputs.site-dir }}/assets/$2' --verbose --no-progress '${{ inputs.site-dir }}/**/*.html'
