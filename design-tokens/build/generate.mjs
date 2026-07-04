@@ -122,6 +122,7 @@ const CAT_LABEL = {
   motion: "Motion",
   shape: "Shape",
   space: "Spacing",
+  focus: "Focus",
   shadow: "Elevation",
 };
 function categoryOrder(contract) {

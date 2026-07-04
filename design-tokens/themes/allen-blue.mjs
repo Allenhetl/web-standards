@@ -72,6 +72,11 @@ export const theme = {
     space4: "1rem",
     space5: "1.5rem",
     space6: "3rem",
+    // focus (composite references other emitted vars → adapts to theme + mode)
+    focusW: "2px",
+    focusOffset: "2px",
+    focusColor: "var(--accent)",
+    focusRing: "0 0 0 2px var(--bg), 0 0 0 4px var(--accent)",
     // elevation (light + dark)
     shadow1:
       "0 1px 2px rgba(20, 22, 45, 0.06), 0 10px 24px -16px rgba(20, 22, 45, 0.3)",
@@ -122,6 +127,10 @@ export const theme = {
     "space-4": "space4",
     "space-5": "space5",
     "space-6": "space6",
+    "focus-ring-width": "focusW",
+    "focus-ring-offset": "focusOffset",
+    "focus-ring-color": "focusColor",
+    "focus-ring": "focusRing",
     "shadow-1": "shadow1",
     "shadow-2": "shadow2",
     "shadow-3": "shadow3",
