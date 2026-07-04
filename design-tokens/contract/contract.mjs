@@ -3,14 +3,16 @@
 // own raw palette. See docs/DESIGN-TOKENS.md.
 //
 //   token     the CSS custom property name (without the leading --)
-//   category  color | type | motion | shape | shadow  (emission grouping)
+//   category  color | type | motion | shape | space | shadow  (emission order)
 //   dark      "required"  → a conformant theme MUST supply a dark value
-//             "invariant" → identical in light and dark (fonts, motion, shape)
+//             "invariant" → identical in light and dark (fonts, motion, shape,
+//                           space)
 //   purpose   one-line meaning (documentation + generated comments)
 //
-// v1 — 29 tokens, derived from the personal site's real token inventory.
-// Deferred (documented in the spec, NOT in v1): a --space-* scale,
-// --bp-grid-color (site-local), a --focus-ring composite.
+// v1.1 — 36 tokens. Adds a --space-* scale (6 rungs). This is ADDITIVE: a
+// minor contract bump, but themes must now implement the new tokens or fail
+// --check (the scale ships default rem values via a shared base, below).
+// Still deferred: --bp-grid-color (site-local), a --focus-ring composite.
 
 export const CONTRACT = [
   // --- color ---------------------------------------------------------
@@ -183,6 +185,46 @@ export const CONTRACT = [
     purpose: "Shape scale: large feature cards, hero panels.",
   },
 
+  // --- space (invariant) — a 4px-based rhythm both sites' common values
+  //     snap to (personal ~0.25/1/1.5rem, PhD ~4/8/12/16px). New code uses
+  //     these; existing ad-hoc values aren't force-migrated. -----------
+  {
+    token: "space-1",
+    category: "space",
+    dark: "invariant",
+    purpose: "Spacing scale: 4px — tight gaps, chip padding.",
+  },
+  {
+    token: "space-2",
+    category: "space",
+    dark: "invariant",
+    purpose: "Spacing scale: 8px — inner control padding, small gaps.",
+  },
+  {
+    token: "space-3",
+    category: "space",
+    dark: "invariant",
+    purpose: "Spacing scale: 12px — default element gap.",
+  },
+  {
+    token: "space-4",
+    category: "space",
+    dark: "invariant",
+    purpose: "Spacing scale: 16px — card padding, section inner rhythm.",
+  },
+  {
+    token: "space-5",
+    category: "space",
+    dark: "invariant",
+    purpose: "Spacing scale: 24px — block separation.",
+  },
+  {
+    token: "space-6",
+    category: "space",
+    dark: "invariant",
+    purpose: "Spacing scale: 48px — major section spacing.",
+  },
+
   // --- shadow (dark variants differ) ---------------------------------
   {
     token: "shadow-1",
@@ -209,4 +251,11 @@ export const CONTRACT_TOKENS = CONTRACT.map((t) => t.token);
 export const DARK_REQUIRED = CONTRACT.filter((t) => t.dark === "required").map(
   (t) => t.token,
 );
-export const CATEGORY_ORDER = ["color", "type", "motion", "shape", "shadow"];
+export const CATEGORY_ORDER = [
+  "color",
+  "type",
+  "motion",
+  "shape",
+  "space",
+  "shadow",
+];

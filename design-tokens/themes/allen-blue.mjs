@@ -65,6 +65,13 @@ export const theme = {
     radiusSm: "4px",
     radiusMd: "6px",
     radiusLg: "14px",
+    // space (rem-based 4px rhythm; respects user font-size)
+    space1: "0.25rem",
+    space2: "0.5rem",
+    space3: "0.75rem",
+    space4: "1rem",
+    space5: "1.5rem",
+    space6: "3rem",
     // elevation (light + dark)
     shadow1:
       "0 1px 2px rgba(20, 22, 45, 0.06), 0 10px 24px -16px rgba(20, 22, 45, 0.3)",
@@ -109,6 +116,12 @@ export const theme = {
     "radius-sm": "radiusSm",
     "radius-md": "radiusMd",
     "radius-lg": "radiusLg",
+    "space-1": "space1",
+    "space-2": "space2",
+    "space-3": "space3",
+    "space-4": "space4",
+    "space-5": "space5",
+    "space-6": "space6",
     "shadow-1": "shadow1",
     "shadow-2": "shadow2",
     "shadow-3": "shadow3",
