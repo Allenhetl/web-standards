@@ -14,11 +14,11 @@ name: Format check (reusable)
 on:
   workflow_call:
     inputs:
-      prettier-plugins:
-        description: "Extra npm packages to install for Prettier"
+      prettier-packages:
+        description: "Exact-pinned Prettier + plugin packages to install. Pinned so formatting is deterministic — an unpinned 'latest' plugin reformats files differently across runs and breaks CI unpredictably."
         type: string
         required: false
-        default: "@shopify/prettier-plugin-liquid"
+        default: "prettier@3.8.4 @shopify/prettier-plugin-liquid@1.10.3"
 
 jobs:
   check:
@@ -29,7 +29,7 @@ jobs:
       - name: Setup Node.js ⚙️
         uses: actions/setup-node@v4
       - name: Install Prettier 💾
-        run: npm install --save-dev --save-exact prettier ${{ inputs.prettier-plugins }}
+        run: npm install --save-dev --save-exact ${{ inputs.prettier-packages }}
       - name: Prettier Check 🔎
         id: prettier
         run: npx prettier . --check
