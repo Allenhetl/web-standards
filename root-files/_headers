@@ -21,10 +21,21 @@
   # Isolate the browsing context a little (opener/embedder hardening).
   Cross-Origin-Opener-Policy: same-origin
   # Content Security Policy — allows the third-party resources actually
-  # used (Google Fonts, model-viewer on unpkg, GitHub stats images,
-  # giscus, jsdelivr/cdnjs). Tightens everything else. If you add a new
+  # used (Google Fonts, model-viewer on unpkg, giscus, Dimensions/Altmetric
+  # badges, jsdelivr/cdnjs) and tightens everything else. If you add a new
   # embed, extend the matching directive here.
-  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; img-src 'self' data: https:; media-src 'self' https:; font-src 'self' https://fonts.gstatic.com data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://giscus.app https://badge.dimensions.ai https://d1bxh8uas1mnw7.cloudfront.net; frame-src https://giscus.app; connect-src 'self' https:; upgrade-insecure-requests
+  #
+  # Design decisions (see standards/docs/security-notes.md):
+  #  * connect-src is an explicit allowlist (not `https:`) — this is the
+  #    channel data exfiltrates through, so it's the one worth pinning.
+  #  * img-src / media-src stay `https:` on purpose: this is an academic
+  #    content site that embeds images/media from many origins; those
+  #    resources can't execute JS, so an allowlist here is high-breakage,
+  #    low-value. Documented risk acceptance.
+  #  * script-src / style-src keep 'unsafe-inline' (al-folio ships inline
+  #    scripts/styles). Nonce/hash migration is deferred to a later round
+  #    (needs a Cloudflare edge function). Documented risk acceptance.
+  Content-Security-Policy: default-src 'self'; base-uri 'self'; object-src 'none'; frame-ancestors 'self'; img-src 'self' data: https:; media-src 'self' https:; font-src 'self' https://fonts.gstatic.com data:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; script-src 'self' 'unsafe-inline' https://unpkg.com https://cdn.jsdelivr.net https://cdnjs.cloudflare.com https://giscus.app https://badge.dimensions.ai https://d1bxh8uas1mnw7.cloudfront.net; frame-src https://giscus.app; connect-src 'self' https://giscus.app https://api.github.com https://badge.dimensions.ai https://d1bxh8uas1mnw7.cloudfront.net https://api.altmetric.com; upgrade-insecure-requests
 
 # --- Caching ------------------------------------------------------------
 # Fingerprinted assets (the theme appends ?v=hash) can be cached hard.

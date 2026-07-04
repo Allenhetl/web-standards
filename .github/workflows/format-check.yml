@@ -20,12 +20,22 @@ on:
         required: false
         default: "prettier@3.8.4 @shopify/prettier-plugin-liquid@1.10.3"
 
+permissions:
+  contents: read
+  pull-requests: write # for the PR-comment-on-failure step; capped by caller
+
 jobs:
   check:
     runs-on: ubuntu-latest
     steps:
+      - name: Harden runner 🛡️
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
       - name: Checkout 🛎️
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Setup Node.js ⚙️
         uses: actions/setup-node@v4
       - name: Install Prettier 💾
@@ -53,7 +63,7 @@ jobs:
         # grant pull-requests: write; silently no-ops otherwise.
         if: ${{ failure() && steps.prettier.conclusion == 'failure' && github.event_name == 'pull_request' }}
         continue-on-error: true
-        uses: thollander/actions-comment-pull-request@v2
+        uses: thollander/actions-comment-pull-request@fabd468d3a1a0b97feee5f6b9e499eab0dd903f6 # v2
         with:
           comment_tag: prettier-failed
           message: |

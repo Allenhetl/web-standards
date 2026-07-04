@@ -19,23 +19,40 @@ loosen with wildcards.
 | `style-src` | `'self' 'unsafe-inline' fonts.googleapis.com cdn.jsdelivr.net cdnjs.cloudflare.com` | Theme CSS, inline styles, font + CDN stylesheets. |
 | `script-src` | `'self' 'unsafe-inline' unpkg.com cdn.jsdelivr.net cdnjs.cloudflare.com giscus.app badge.dimensions.ai d1bxh8uas1mnw7.cloudfront.net` | Theme JS, model-viewer (unpkg), giscus, Dimensions/Altmetric badges. |
 | `frame-src` | `https://giscus.app` | giscus comments iframe. |
-| `connect-src` | `'self' https:` | XHR/fetch to self or HTTPS. |
+| `connect-src` | `'self' giscus.app api.github.com badge.dimensions.ai d1bxh8uas1mnw7.cloudfront.net api.altmetric.com` | XHR/fetch allowlist (giscus, GitHub API for repo stats, Dimensions/Altmetric badges). |
 | `upgrade-insecure-requests` | — | Auto-upgrade any stray http URL to https. |
 
-## Adding a third-party embed
+## Documented risk acceptances
 
-1. Identify what the embed loads: a script? a stylesheet? an iframe? images?
+Two directives are deliberately looser than the strictest possible policy.
+Both are conscious trade-offs, not oversights:
+
+1. **`script-src` / `style-src` keep `'unsafe-inline'`.** The al-folio theme
+   ships inline `<script>`/`<style>` blocks and runtime-injected inline
+   `style="…"` attributes. Real hardening here means per-request nonces,
+   which on static Cloudflare Pages requires a `_middleware` edge function
+   that rewrites responses and injects a nonce + matching header. That is a
+   higher-risk change (a misconfigured CSP white-screens the whole site), so
+   it is deferred to its own focused round. When done, add `'strict-dynamic'`
+   + a nonce to `script-src`, drop `'unsafe-inline'` for scripts, and (if a
+   site diverges from the standard) list `_headers` in that site's
+   `.standards-allow`.
+
+2. **`img-src` / `media-src` stay `https:` (any HTTPS origin).** These are
+   academic content sites that embed images and media from many origins
+   (paper figures, external hosts). Images and media cannot execute
+   JavaScript, so they are not an XSS vector; an allowlist here would break
+   future embedded content for negligible security gain. The channel that
+   *does* matter for exfiltration — `connect-src` — is an explicit allowlist.
+
+## Adding a third-party script/style/frame/connect host
+
+1. Identify what the embed loads: a script? a stylesheet? an iframe? a
+   fetch/XHR endpoint?
 2. Add its **exact origin** (scheme + host, no path) to the matching
-   directive in `root-files/_headers` in the web-standards repo.
-3. Commit in web-standards, then in each site run
+   directive in `root-files/_headers`. (Images/media already allow any
+   HTTPS origin — no change needed.)
+3. Commit in web-standards, tag a release + move `v1`, then in each site run
    `git submodule update --remote standards` and commit (the pre-commit hook
    re-syncs `_headers`).
 4. Verify in the browser console that no CSP violation is logged.
-
-## `'unsafe-inline'` note
-
-`script-src` and `style-src` include `'unsafe-inline'` because the al-folio
-theme ships inline scripts/styles. This is a known trade-off; if a site
-moves to nonce/hash-based inline handling, tighten this directive there and
-add the site to `.standards-allow` for `_headers` so the drift check permits
-the stricter policy.

@@ -15,4 +15,4 @@ jobs:
       packages: read
       actions: read
       contents: read
-    uses: Allenhetl/web-standards/.github/workflows/codeql.yml@main
+    uses: Allenhetl/web-standards/.github/workflows/codeql.yml@v1

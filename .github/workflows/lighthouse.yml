@@ -31,19 +31,28 @@ on:
         required: false
         default: 0.9
 
+permissions:
+  contents: read
+
 jobs:
   lighthouse:
     runs-on: ubuntu-latest
     steps:
+      - name: Harden runner 🛡️
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
       - name: Checkout 🛎️
         uses: actions/checkout@v4
+        with:
+          persist-credentials: false
       - name: Setup Ruby
-        uses: ruby/setup-ruby@v1
+        uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9 # v1.316.0
         with:
           ruby-version: ${{ inputs.ruby-version }}
           bundler-cache: true
       - name: Update _config.yml ⚙️
-        uses: fjogeleit/yaml-update-action@main
+        uses: fjogeleit/yaml-update-action@dffe9a5223d84653c13374032382f6bb5de8e5ef # v0.17.0
         with:
           commitChange: false
           valueFile: "_config.yml"
@@ -76,7 +85,7 @@ jobs:
           done
           echo "list=$urls" >> "$GITHUB_OUTPUT"
       - name: Run Lighthouse 🔦
-        uses: treosh/lighthouse-ci-action@v12
+        uses: treosh/lighthouse-ci-action@3e7e23fb74242897f95c0ba9cabad3d0227b9b18 # v12
         with:
           urls: ${{ steps.urls.outputs.list }}
           uploadArtifacts: true
