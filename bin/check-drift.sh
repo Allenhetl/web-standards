@@ -49,8 +49,9 @@ check_prettierignore() {
     echo "::error::missing root file '$name' — run sync-standards.sh"; drift=1; return
   fi
   local a b
-  a="$(sed -n "1,/$PRETTIER_MARKER/p" "$src")"
-  b="$(sed -n "1,/$PRETTIER_MARKER/p" "$dst")"
+  # Anchor to line start: the banner text also contains the marker string.
+  a="$(sed -n "1,/^$PRETTIER_MARKER/p" "$src")"
+  b="$(sed -n "1,/^$PRETTIER_MARKER/p" "$dst")"
   if [ "$a" = "$b" ]; then
     echo "ok: $name (managed section)"
   else

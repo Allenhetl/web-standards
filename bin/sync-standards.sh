@@ -53,9 +53,11 @@ sync_prettierignore() {
     return
   fi
   local base tail merged
-  base="$(sed -n "1,/$PRETTIER_MARKER/p" "$src")"
-  if [ -f "$dst" ] && grep -qF "$PRETTIER_MARKER" "$dst"; then
-    tail="$(sed "1,/$PRETTIER_MARKER/d" "$dst")"
+  # Anchor to line start: the banner text also contains the marker string,
+  # so an unanchored match would split at the wrong line.
+  base="$(sed -n "1,/^$PRETTIER_MARKER/p" "$src")"
+  if [ -f "$dst" ] && grep -qE "^$PRETTIER_MARKER" "$dst"; then
+    tail="$(sed "1,/^$PRETTIER_MARKER/d" "$dst")"
     merged="$base"$'\n'"$tail"
   else
     merged="$(cat "$src")"
