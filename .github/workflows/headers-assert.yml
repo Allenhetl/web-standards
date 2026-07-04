@@ -1,0 +1,55 @@
+# Reusable: build the site, then assert its GENERATED _headers meets the core
+# baseline ∪ the profile's requirements. For sites that generate their
+# security headers (node-private) instead of syncing a static _headers.
+name: Headers assert (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      build-cmd:
+        type: string
+        required: false
+        default: "npm run build"
+      headers-file:
+        type: string
+        required: false
+        default: "site/_headers"
+      profile:
+        description: "Profile name, to locate standards/profiles/<p>/headers-requirements.yml"
+        type: string
+        required: true
+      node-version:
+        type: string
+        required: false
+        default: "20"
+
+permissions:
+  contents: read
+
+jobs:
+  assert:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden runner 🛡️
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - name: Setup Node ⚙️
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: Install deps 🔧
+        run: npm ci || npm install
+      - name: Build 🏗️
+        run: ${{ inputs.build-cmd }}
+      - name: Assert headers ✅
+        run: |
+          bash standards/core/assert-headers.sh \
+            "${{ inputs.headers-file }}" \
+            standards/core/baseline-requirements.yml \
+            "standards/profiles/${{ inputs.profile }}/headers-requirements.yml"

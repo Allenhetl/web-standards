@@ -22,6 +22,30 @@ rollback paths.
 
 ---
 
+## v2.1.0 — 2026-07-04
+
+Adds the **node-private** profile — for private, offline, `noindex` static
+sites built by a Node generator (e.g. a site whose `build.mjs` emits its own
+`_headers`/`robots.txt`). Non-breaking; `jekyll-public` unchanged.
+
+### Added
+
+- `profiles/node-private/` — `profile.yml` (`runtime: node`, `npm run build`
+  → `site`, `headers/robots: generated`, no CodeQL), `headers-requirements.yml`
+  (required CSP directives + security headers), caller stubs, README.
+- `core/assert-headers.sh` — asserts a `_headers` file meets the core
+  baseline ∪ a profile's requirements (for generated headers that aren't
+  synced/byte-drift-checked).
+- Reusable `build-validate.yml` (Node build + optional headless-browser
+  validate) and `headers-assert.yml` (build then assert generated headers).
+
+### Notes
+
+- node-private omits CodeQL: private repos need GitHub Advanced Security.
+- Caller stubs trigger on `master` + `main` (private sites may use either).
+
+---
+
 ## v2.0.0 — 2026-07-04
 
 Layered restructure so the standard supports **multiple site types**, not

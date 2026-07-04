@@ -1,0 +1,8 @@
+name: node-private
+runtime: node
+build-cmd: "npm run build"
+validate-cmd: "npm run validate" # headless-browser render gate (needs Chrome)
+site-dir: "site"
+codeql-languages: "" # empty = no CodeQL (private repo, no GH Advanced Security)
+headers: generated # site's build.mjs emits site/_headers — assert, don't sync
+robots: generated # build.mjs emits site/robots.txt

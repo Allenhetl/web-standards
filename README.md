@@ -12,7 +12,7 @@ per site; upgrade in one place; drift is caught automatically.
 | `core/formatting/` | Universal formatting configs (`.editorconfig`, `.prettierrc`, `.prettierignore`) shared by **all** profiles. |
 | `core/baseline-requirements.yml` | The CSP/robots/build **floor** every profile must satisfy (assertion-enforced; profiles may tighten, never loosen). |
 | `root-files/` | Universal root files not tied to a profile (`.pre-commit-config.yaml`). |
-| `profiles/<name>/` | A **site type**: `profile.yml` (build-cmd, site-dir, langs…), its `root-files/` (e.g. public `_headers`+`robots.txt`), `caller-workflows/`, README. Ships `jekyll-public` (and `node-private` in Phase 2). |
+| `profiles/<name>/` | A **site type**: `profile.yml` (build-cmd, site-dir, langs…), its `root-files/` (public) or `headers-requirements.yml` (generated), `caller-workflows/`, README. Ships **`jekyll-public`** (public al-folio) and **`node-private`** (private Node-generated, `noindex`, headers asserted not synced). |
 | `bin/` | `onboard.sh --profile <name>` (wire a site up), `sync-standards.sh`, `check-drift.sh`. |
 | `ENGINEERING.baseline.md` · `docs/security-notes.md` · `CHECKLIST.md` · `CHANGELOG.md` | Docs. |
 

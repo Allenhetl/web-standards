@@ -1,0 +1,10 @@
+# Caller stub — logic in Allenhetl/web-standards.
+name: Standards drift
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+jobs:
+  drift:
+    uses: Allenhetl/web-standards/.github/workflows/standards-drift.yml@v2

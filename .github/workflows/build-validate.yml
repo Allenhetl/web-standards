@@ -1,0 +1,50 @@
+# Reusable build + optional validate gate for Node-generated sites.
+name: Build & validate (reusable)
+
+on:
+  workflow_call:
+    inputs:
+      build-cmd:
+        type: string
+        required: false
+        default: "npm run build"
+      validate-cmd:
+        description: "Optional headless-browser validate command; empty to skip"
+        type: string
+        required: false
+        default: ""
+      node-version:
+        type: string
+        required: false
+        default: "20"
+
+permissions:
+  contents: read
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Harden runner 🛡️
+        uses: step-security/harden-runner@9af89fc71515a100421586dfdb3dc9c984fbf411 # v2.19.4
+        with:
+          egress-policy: audit
+      - name: Checkout 🛎️
+        uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          submodules: recursive
+      - name: Setup Node ⚙️
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
+      - name: Install deps 🔧
+        run: npm ci || npm install
+      - name: Build 🏗️
+        run: ${{ inputs.build-cmd }}
+      - name: Install Chromium for validate 🌐
+        if: inputs.validate-cmd != ''
+        run: npx --yes puppeteer browsers install chrome
+      - name: Validate 🔎
+        if: inputs.validate-cmd != ''
+        run: ${{ inputs.validate-cmd }}
