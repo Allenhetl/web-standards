@@ -5,10 +5,27 @@ name: Lighthouse (reusable)
 on:
   workflow_call:
     inputs:
+      runtime:
+        description: "jekyll | node"
+        type: string
+        required: false
+        default: "jekyll"
+      build-cmd:
+        type: string
+        required: false
+        default: "bundle exec jekyll build"
+      site-dir:
+        type: string
+        required: false
+        default: "_site"
       ruby-version:
         type: string
         required: false
         default: "3.3.5"
+      node-version:
+        type: string
+        required: false
+        default: "20"
       paths:
         description: "Newline- or space-separated site paths to audit"
         type: string
@@ -47,11 +64,18 @@ jobs:
         with:
           persist-credentials: false
       - name: Setup Ruby
+        if: inputs.runtime == 'jekyll'
         uses: ruby/setup-ruby@d45b1a4e94b71acab930e56e79c6aa188764e7f9 # v1.316.0
         with:
           ruby-version: ${{ inputs.ruby-version }}
           bundler-cache: true
+      - name: Setup Node ⚙️
+        if: inputs.runtime == 'node'
+        uses: actions/setup-node@v4
+        with:
+          node-version: ${{ inputs.node-version }}
       - name: Update _config.yml ⚙️
+        if: inputs.runtime == 'jekyll'
         uses: fjogeleit/yaml-update-action@dffe9a5223d84653c13374032382f6bb5de8e5ef # v0.17.0
         with:
           commitChange: false
@@ -61,20 +85,27 @@ jobs:
               "giscus.repo": "${{ github.repository }}",
               "baseurl": ""
             }
-      - name: Install and Build 🔧
+      - name: Jekyll build deps 🔧
+        if: inputs.runtime == 'jekyll'
         run: |
           sudo apt-get update && sudo apt-get install -y imagemagick
           pip3 install --upgrade jupyter
+      - name: Node install 🔧
+        if: inputs.runtime == 'node'
+        run: npm ci || npm install
+      - name: Build 🏗️
+        run: |
           export JEKYLL_ENV=production
-          bundle exec jekyll build
+          ${{ inputs.build-cmd }}
       - name: Purge unused CSS 🧹
+        if: inputs.runtime == 'jekyll'
         run: |
           npm install -g purgecss
           purgecss -c purgecss.config.js
       - name: Serve site 🌐
         run: |
           npm install -g http-server
-          http-server _site/ -p 8080 &
+          http-server ${{ inputs.site-dir }}/ -p 8080 &
           sleep 3
       - name: Build LHCI URL list 🔧
         id: urls

@@ -4,17 +4,26 @@ Single source of truth for the security, engineering, CI, and content
 conventions shared across Allen's personal and academic sites. Adopt it once
 per site; upgrade in one place; drift is caught automatically.
 
-## What's in here
+## Layout (v2 — layered)
 
 | Path | Purpose |
 | ---- | ------- |
-| `.github/workflows/*.yml` | **Reusable CI** (`workflow_call`): accessibility, broken-links, Lighthouse, format-check, CodeQL, standards-drift. Sites call these; change once, every site follows. |
-| `root-files/` | **Authoritative copies** of files that must live at a site's repo root: `_headers`, `robots.txt`, `.editorconfig`, `.prettierrc`, `.prettierignore`, `.pre-commit-config.yaml`. |
-| `templates/workflows/` | Thin **caller stubs** a site drops into `.github/workflows/` to invoke the reusable workflows. |
-| `bin/` | `onboard.sh` (wire a site up), `sync-standards.sh` (copy root files in), `check-drift.sh` (CI enforcement). |
-| `ENGINEERING.baseline.md` | Language-neutral engineering baseline each site links to. |
-| `docs/security-notes.md` | CSP explained directive-by-directive. |
-| `CHECKLIST.md` | Onboarding steps (automated + manual). |
+| `.github/workflows/*.yml` | **Reusable CI** (`workflow_call`), **parameterized** by `runtime`/`build-cmd`/`site-dir`/`codeql-languages` so any stack can call them: build, accessibility, broken-links, Lighthouse, format-check, CodeQL, standards-drift. |
+| `core/formatting/` | Universal formatting configs (`.editorconfig`, `.prettierrc`, `.prettierignore`) shared by **all** profiles. |
+| `core/baseline-requirements.yml` | The CSP/robots/build **floor** every profile must satisfy (assertion-enforced; profiles may tighten, never loosen). |
+| `root-files/` | Universal root files not tied to a profile (`.pre-commit-config.yaml`). |
+| `profiles/<name>/` | A **site type**: `profile.yml` (build-cmd, site-dir, langs…), its `root-files/` (e.g. public `_headers`+`robots.txt`), `caller-workflows/`, README. Ships `jekyll-public` (and `node-private` in Phase 2). |
+| `bin/` | `onboard.sh --profile <name>` (wire a site up), `sync-standards.sh`, `check-drift.sh`. |
+| `ENGINEERING.baseline.md` · `docs/security-notes.md` · `CHECKLIST.md` · `CHANGELOG.md` | Docs. |
+
+## Profiles & versioning
+
+A site declares its type in a root `.standards-profile` file. Onboard with
+`bash .../bin/onboard.sh --profile jekyll-public`. Consumers reference
+reusable workflows at the moving major tag **`@v2`** (`@v1` remains valid as
+a rollback). Adding a new site type = add a `profiles/<name>/` directory; no
+`core/` change. See `docs/BUILDING-A-SITE.md` (Phase 3) for picking a
+profile.
 
 ## How it stays in sync (four mechanisms)
 

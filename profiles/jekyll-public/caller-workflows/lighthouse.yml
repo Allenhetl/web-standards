@@ -1,0 +1,12 @@
+# Caller stub — real logic lives in Allenhetl/web-standards.
+# Override paths/thresholds here per site.
+name: Lighthouse
+on:
+  workflow_dispatch:
+  schedule:
+    - cron: "30 5 * * 1"
+jobs:
+  lighthouse:
+    uses: Allenhetl/web-standards/.github/workflows/lighthouse.yml@v1
+    with:
+      paths: "/"
