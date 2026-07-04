@@ -10,7 +10,7 @@ visual design.
 
 | Path                    | Purpose                                                                                                                                                                                            |
 | ----------------------- | -------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
-| `contract/contract.mjs` | **THE interface** — the 30 semantic token names + metadata (`category`, `dark: required\|invariant`, `purpose`). Shared by all sites.                                                              |
+| `contract/contract.mjs` | **THE interface** — the 36 semantic token names (incl. a 6-rung --space-\* scale) + metadata (`category`, `dark: required\|invariant`, `purpose`). Shared by all sites.                            |
 | `themes/<name>.mjs`     | A site's theme: private `raw` palette/fonts/scales + a `semantic` map (contract token → raw key) + a partial `dark` override. `.mjs`, not YAML — `import()` is the parser (zero-dep, no escaping). |
 | `build/generate.mjs`    | Zero-dep Node generator: resolves contract + theme → per-target files; `--check` enforces conformance.                                                                                             |
 | `dist/<theme>/`         | **Committed** generated artifacts (sites reference these; zero build-time dependency).                                                                                                             |
@@ -52,7 +52,7 @@ the "stricter never looser" contract, mirroring the repo's headers-assert.
   safe to inline under a strict CSP. Used by `phd-mono` (private offline
   site).
 
-`allen-blue` and `phd-mono` implement the **same 30-token contract** with
+`allen-blue` and `phd-mono` implement the **same 36-token contract** with
 completely different palettes — the proof that the interface is shared while
 styles stay diverse.
 

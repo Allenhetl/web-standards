@@ -53,6 +53,14 @@ export const theme = {
     radiusSm: "6px",
     radiusMd: "9px",
     radiusLg: "14px",
+    // space (shared 4px rhythm — same ladder as allen-blue; spacing is the
+    // one axis kept consistent across sites for structural parity)
+    space1: "0.25rem",
+    space2: "0.5rem",
+    space3: "0.75rem",
+    space4: "1rem",
+    space5: "1.5rem",
+    space6: "3rem",
     // elevation
     shadow1: "0 1px 2px rgba(0, 0, 0, 0.4), 0 8px 24px rgba(0, 0, 0, 0.28)",
     shadow2: "0 2px 6px rgba(0, 0, 0, 0.45), 0 18px 40px rgba(0, 0, 0, 0.38)",
@@ -89,6 +97,12 @@ export const theme = {
     "radius-sm": "radiusSm",
     "radius-md": "radiusMd",
     "radius-lg": "radiusLg",
+    "space-1": "space1",
+    "space-2": "space2",
+    "space-3": "space3",
+    "space-4": "space4",
+    "space-5": "space5",
+    "space-6": "space6",
     "shadow-1": "shadow1",
     "shadow-2": "shadow2",
     "shadow-3": "shadow3",
