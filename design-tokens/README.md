@@ -43,6 +43,19 @@ the "stricter never looser" contract, mirroring the repo's headers-assert.
 2. Register its targets in `build/generate.mjs` `THEME_TARGETS`.
 3. `node build/generate.mjs --all` and commit `dist/`.
 
+## Targets shipped
+
+- **`scss`** → `_tokens.scss` (Jekyll): `:root{}` + `html[data-theme="dark"]{}`.
+  Used by `allen-blue` (personal site).
+- **`css`** → `tokens.css` (inline-safe): `:root{}` +
+  `@media (prefers-color-scheme: dark)`, no `@import`, system fonts only —
+  safe to inline under a strict CSP. Used by `phd-mono` (private offline
+  site).
+
+`allen-blue` and `phd-mono` implement the **same 30-token contract** with
+completely different palettes — the proof that the interface is shared while
+styles stay diverse.
+
 ## Adding a target format
 
 Add a pure `model → string` emitter to `build/generate.mjs`'s `EMITTERS`
