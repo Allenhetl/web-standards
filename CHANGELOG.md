@@ -22,6 +22,35 @@ rollback paths.
 
 ---
 
+## v2.6.0 — 2026-07-04
+
+design-tokens: add the `--focus-ring` set (contract v1.2, 40 tokens) —
+`--focus-ring-width/-offset/-color` ingredients + a ready `--focus-ring`
+box-shadow halo composite referencing `var(--bg)`/`var(--accent)` (adapts per
+theme + mode). Both themes implement it.
+
+## v2.5.0 — 2026-07-04
+
+design-tokens: add the `--space-*` scale (contract v1.1) — a 6-rung 4px rem
+ladder both sites' common values snap to. Generator now derives category
+emission order from the contract (a new category can't be silently dropped).
+
+## v2.4.0 — 2026-07-04
+
+design-tokens Phase 3a: inlinable-`css` target (CSP-safe `:root` +
+`@media prefers-color-scheme dark`, no `@import`) + the `phd-mono` theme
+(private site's dark-native palette on the same contract as allen-blue).
+
+## v2.3.0 — 2026-07-04
+
+design-tokens Phase 1: the shared design system — a semantic **contract**
+(`contract/contract.mjs`), per-site `.mjs` themes, a zero-dep generator
+(`build/generate.mjs`, `--check`/`--all`) that validates conformance and
+emits per-target files (committed to `dist/`), the `allen-blue` theme, the
+`scss` target, and a reusable `token-check` + self-CI. Personal site adopted
+it appearance-preservingly (proved by a before/after computed-value diff in
+light + dark). PhD site injects the generated `phd-mono` tokens.css.
+
 ## v2.2.0 — 2026-07-04
 
 Documentation to close out v2 — the "flowable site-building" guides.

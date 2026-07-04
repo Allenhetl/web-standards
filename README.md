@@ -4,6 +4,10 @@ Single source of truth for the security, engineering, CI, and content
 conventions shared across Allen's personal and academic sites. Adopt it once
 per site; upgrade in one place; drift is caught automatically.
 
+> **New here? Read [OVERVIEW.md](OVERVIEW.md)** — the one-page map of every
+> capability (CI, security, design tokens, onboarding) and the single idea
+> behind them.
+
 ## Layout (v2 — layered)
 
 | Path                                                                                   | Purpose                                                                                                                                                                                                                                                                                               |
