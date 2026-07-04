@@ -1,0 +1,16 @@
+# web-standards' own CI. The other workflows here are reusable (workflow_call)
+# and only run when a consuming site calls them; this one runs on THIS repo to
+# guard its own internals — currently the design-token contract + artifacts.
+name: CI
+on:
+  push:
+    branches: [main]
+  pull_request:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  tokens:
+    uses: ./.github/workflows/token-check.yml
