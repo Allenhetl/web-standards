@@ -7,4 +7,7 @@ on:
     branches: [main, master]
 jobs:
   prettier:
+    permissions:
+      contents: read
+      pull-requests: write # lets the reusable workflow post a PR comment on failure
     uses: Allenhetl/web-standards/.github/workflows/format-check.yml@main

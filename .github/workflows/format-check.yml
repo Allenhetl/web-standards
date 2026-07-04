@@ -1,4 +1,14 @@
 # Reusable Prettier format check. Fails if any file is not formatted.
+# On a failing pull_request it uploads an HTML diff artifact and posts a
+# sticky PR comment linking to it — provided the caller grants
+# `pull-requests: write`, e.g.:
+#
+#   jobs:
+#     prettier:
+#       permissions:
+#         contents: read
+#         pull-requests: write
+#       uses: Allenhetl/web-standards/.github/workflows/format-check.yml@main
 name: Format check (reusable)
 
 on:
@@ -31,9 +41,20 @@ jobs:
           npm install -g diff2html-cli
           diff2html -i file -s side -F diff.html -- diff.txt
       - name: Upload html diff ⬆️
+        id: artifact-upload
         if: ${{ failure() && steps.prettier.conclusion == 'failure' }}
         uses: actions/upload-artifact@v4
         with:
           name: HTML Diff
           path: diff.html
           retention-days: 7
+      - name: Comment on PR 💬
+        # Posts directly (no repository_dispatch hop). Needs the caller to
+        # grant pull-requests: write; silently no-ops otherwise.
+        if: ${{ failure() && steps.prettier.conclusion == 'failure' && github.event_name == 'pull_request' }}
+        continue-on-error: true
+        uses: thollander/actions-comment-pull-request@v2
+        with:
+          comment_tag: prettier-failed
+          message: |
+            Failed [prettier code check](${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}). Download the [HTML diff artifact](${{ steps.artifact-upload.outputs.artifact-url }}) to see what needs formatting. Run `npx prettier . --write` locally to fix.
