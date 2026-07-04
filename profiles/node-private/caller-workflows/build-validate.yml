@@ -1,0 +1,13 @@
+# Caller stub — logic in Allenhetl/web-standards.
+name: Build & validate
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+jobs:
+  build:
+    uses: Allenhetl/web-standards/.github/workflows/build-validate.yml@v2
+    with:
+      build-cmd: "npm run build"
+      validate-cmd: "npm run validate"

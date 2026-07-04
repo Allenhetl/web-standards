@@ -1,0 +1,12 @@
+# Caller stub — logic in Allenhetl/web-standards.
+name: Headers assert
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+jobs:
+  assert:
+    uses: Allenhetl/web-standards/.github/workflows/headers-assert.yml@v2
+    with:
+      profile: node-private

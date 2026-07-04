@@ -1,0 +1,13 @@
+# Caller stub — logic in Allenhetl/web-standards.
+name: Format check
+on:
+  push:
+    branches: [master, main]
+  pull_request:
+    branches: [master, main]
+jobs:
+  prettier:
+    permissions:
+      contents: read
+      pull-requests: write
+    uses: Allenhetl/web-standards/.github/workflows/format-check.yml@v2
