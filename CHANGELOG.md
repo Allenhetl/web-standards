@@ -22,6 +22,30 @@ rollback paths.
 
 ---
 
+## v2.2.0 — 2026-07-04
+
+Documentation to close out v2 — the "flowable site-building" guides.
+
+### Added
+
+- `docs/BUILDING-A-SITE.md` — the decision guide: pick a profile
+  (jekyll-public vs node-private), one-command onboard, human checklist,
+  upgrade/deviate flow.
+- `docs/creating-a-profile.md` — how to add a new site type (profile #3+)
+  as config, without touching `core/` or the reusable workflows.
+- README + CHECKLIST link to both.
+
+---
+
+## v2.1.1 — 2026-07-04
+
+- node-private `build-validate` stub defaults `validate-cmd` to empty (the
+  headless render gate needs puppeteer-core/Chrome that isn't a CI-available
+  dependency for zero-dep sites; it stays a local gate).
+- Fixed `onboard.sh` closing message (said `@v1`, installs `@v2`).
+
+---
+
 ## v2.1.0 — 2026-07-04
 
 Adds the **node-private** profile — for private, offline, `noindex` static
